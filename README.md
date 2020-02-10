@@ -13,6 +13,7 @@ snapper -c home create-config /home
 snapper -c home create -t single -p -d "External backup" > /home/.snapshots/remote-id
 mkdir -p /mnt/archive/snapshots/home
 btrfs send /home/.snapshots/$(cat /home/.snapshots/remote-id)/snapshot | btrfs receive /mnt/archive/snapshots/home
+mv /mnt/archive/snapshots/home/snapshot /mnt/archive/snapshots/home/$(cat /home/.snapshots/remote-id)
 ```
 
 To run it once, simply call:
