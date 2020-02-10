@@ -1,0 +1,13 @@
+[Unit]
+Description=Snapper-based backup of %i
+# Recommended to add an After line to make sure the script does not run also before your destination volume is mounted
+After=-.mount
+#After=mnt-archive.mount
+
+[Service]
+Type=oneshot
+EnvironmentFile=/etc/snapper/configs/%i
+ExecStart=/usr/local/sbin/snapper-backup.sh %i
+
+[Install]
+WantedBy=multi-user.target
