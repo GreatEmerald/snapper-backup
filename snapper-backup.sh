@@ -22,7 +22,13 @@ if ! [[ $NEW_ROOT_ID =~ $re ]] ; then
 	exit 1
 fi
 echo "Sending the snapshot difference"
-btrfs send -p ${SUBVOLUME}/.snapshots/${OLD_ROOT_ID}/snapshot ${SUBVOLUME}/.snapshots/${NEW_ROOT_ID}/snapshot | btrfs receive $ARCHIVE_PATH && mv ${ARCHIVE_PATH}/snapshot ${ARCHIVE_PATH}/${NEW_ROOT_ID}
+btrfs send -p ${SUBVOLUME}/.snapshots/${OLD_ROOT_ID}/snapshot ${SUBVOLUME}/.snapshots/${NEW_ROOT_ID}/snapshot | btrfs receive ${ARCHIVE_PATH}
+if [[ ! -d ${ARCHIVE_PATH}/snapshot ]] ; then
+	echo "Error: btrfs send-receive failed, aborting." >&2
+	mv ${SUBVOLUME}/.snapshots/remote-id-old ${SUBVOLUME}/.snapshots/remote-id
+	exit 1
+fi
+mv ${ARCHIVE_PATH}/snapshot ${ARCHIVE_PATH}/${NEW_ROOT_ID}
 btrfs filesystem sync ${SUBVOLUME}
 echo "Removing older non-cleaned-up snapshot"
 snapper -c $1 delete ${OLD_ROOT_ID}
