@@ -9,11 +9,14 @@ Next, create a first time setup:
 ```bash
 # If you don't yet have one (e.g. for snapshots of /home), assuming you name it "home"
 # Note that you always have a config "root" that points to /
-snapper -c home create-config /home
-snapper -c home create -t single -p -d "External backup" > /home/.snapshots/remote-id
-mkdir -p /mnt/archive/snapshots/home
-btrfs send /home/.snapshots/$(cat /home/.snapshots/remote-id)/snapshot | btrfs receive /mnt/archive/snapshots/home
-mv /mnt/archive/snapshots/home/snapshot /mnt/archive/snapshots/home/$(cat /home/.snapshots/remote-id)
+SRCCONFIG=home
+SRCPATH=/home # Path to backup
+DSTPATH=/mnt/archive/snapshots
+snapper -c $SRCCONFIG create-config $SRCPATH
+snapper -c $SRCCONFIG create -t single -p -d "External backup" > $SRCPATH/.snapshots/remote-id
+mkdir -p $DSTPATH/$SRCCONFIG
+btrfs send $SRCPATH/.snapshots/$(cat $SRCPATH/.snapshots/remote-id)/snapshot | btrfs receive $DSTPATH/$SRCCONFIG
+mv $DSTPATH/$SRCCONFIG/snapshot $DSTPATH/$SRCCONFIG/$(cat $SRCPATH/.snapshots/remote-id)
 ```
 
 To run it once, simply call:
